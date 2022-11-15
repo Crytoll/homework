@@ -1,0 +1,27 @@
+# Source: ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: m8-httpserver
+  namespace: default
+  labels:
+    app.kubernetes.io/name: httpserver
+    app.kubernetes.io/instance: m8
+    app.kubernetes.io/managed-by: Manual
+  annotations:
+spec:
+  rules:
+    - host: m8.k8snb.com
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: m8-httpserver
+                port:
+                  name: http
+  tls:
+    - hosts:
+        - m8.k8snb.com
+      secretName: m8.k8snb.com-tls
