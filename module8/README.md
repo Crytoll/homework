@@ -8,4 +8,4 @@
 
 `kubectl create -f deploy`
 
-![k8s资源](/Users/chenying/go/src/github.com/homework/module8/readme.png)
+![k8s资源](readme.png)
