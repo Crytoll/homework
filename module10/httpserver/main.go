@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/homework/module10/httpserver/metrics/metrics"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -15,11 +16,9 @@ import (
 	"sync"
 	"syscall"
 	"time"
-	"metrics"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
