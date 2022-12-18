@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service1
+  template:
+    metadata:
+      labels:
+        app: service1
+    spec:
+      containers:
+        - name: service1
+          imagePullPolicy: Always
+          image: crytoll/service1:v1.0
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service1
+spec:
+  ports:
+    - name: http-service1
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: service1

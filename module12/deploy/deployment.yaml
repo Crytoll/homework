@@ -1,0 +1,109 @@
+# Source: deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpserver-v1
+  namespace: default
+  labels:
+    app.kubernetes.io/name: httpserver
+    app.kubernetes.io/instance: m12
+    app.kubernetes.io/managed-by: Manual
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: httpserver
+      app.kubernetes.io/instance: m12
+      version: v1
+  replicas: 3
+  strategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: httpserver
+        app.kubernetes.io/instance: m12
+        app.kubernetes.io/managed-by: Manual
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      automountServiceAccountToken: false
+      shareProcessNamespace: false
+      serviceAccountName: default
+      affinity:
+        podAffinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: httpserver
+                    app.kubernetes.io/instance: m12
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+      hostNetwork: false
+      hostIPC: false
+      containers:
+        - name: httpserver
+          image: ygqygq2/httpserver:v1
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+          env:
+          envFrom:
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -ec
+                  - "echo 在启动时我能做一些事"
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -ec
+                  - "echo 在退出前我能做一些事"
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          volumeMounts:
+            - name: httpserver-conf
+              mountPath: /app/conf
+              readOnly: true
+      volumes:
+        - name: httpserver-conf
+          configMap:
+            name: httpserver-config

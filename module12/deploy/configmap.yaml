@@ -1,0 +1,18 @@
+# Source: configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: httpserver-config
+  namespace: default
+  labels:
+    app.kubernetes.io/name: httpserver
+    app.kubernetes.io/instance: m12
+    app.kubernetes.io/managed-by: Manual
+data:
+  config.yaml: |-
+    http:
+      port: 8080
+      host: 0.0.0.0
+
+    log:
+      level: info

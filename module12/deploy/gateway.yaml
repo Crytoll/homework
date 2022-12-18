@@ -1,0 +1,19 @@
+# Source: gateway.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: httpserver
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway  # use istio default ingress gateway
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: httpserver.k8snb.com-tls  # must be the same as secret
+    hosts:
+    - httpserver.k8snb.com

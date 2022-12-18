@@ -1,0 +1,26 @@
+# Source: virtual-service.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: httpserver
+  namespace: default
+spec:
+  hosts:
+    - httpserver
+    - httpserver.k8snb.com
+  gateways:
+  - mesh # applies to all the sidecars in the mesh
+  - httpserver
+  http:
+  - match:
+    - headers:
+        user:
+          exact: crytoll
+    route:
+    - destination:
+        host: httpserver
+        subset: v2
+  - route:
+    - destination:
+        host: httpserver
+        subset: v1
